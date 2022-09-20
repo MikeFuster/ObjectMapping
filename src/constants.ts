@@ -1,10 +1,11 @@
-// this schema is read only
+// this schema is the source
 export const customerJsonSchema = {
   type: "object",
   title: "Budgetly Customer",
   properties: {
     Title: {
       type: "string",
+      label: "Budgetly Title",
     },
     First: {
       type: "string",
@@ -15,16 +16,29 @@ export const customerJsonSchema = {
     Organization: {
       type: "string",
     },
+    Nested: {
+      Object: {
+        Is: {
+          properties: {
+            here: {
+              type: "string",
+              label: "Budgetly Nested Property",
+            },
+          },
+        },
+      },
+    },
   },
 };
 
-// this schema gets mapped
+// this schema is the target
 export const leadJsonSchema = {
   type: "object",
   title: "Salesforce Lead",
   properties: {
     Salutation: {
       type: "string",
+      label: "Salesforce Salutation",
     },
     FirstName: {
       type: "string",
@@ -35,66 +49,33 @@ export const leadJsonSchema = {
     Company: {
       type: "string",
     },
-  },
-};
-
-
-const _schema = {
-  type: "object",
-  properties: {
-    keys: {
-      type: "array",
-      items: {
-        type: "object",
+    Nested: {
+      Keys: {
         properties: {
-          source: {
+          oneNestedKey: {
             type: "string",
-            enum: ["first.name", "last.name"]
           },
-          target: {
-            type: "string",
-            enum: ["firstName", "lastName"]
-          }
-        }
-      }
-    }
-  }
-};
-
-
-export const magicFunction = (schema1: any, schema2: any) => {
-  return {
-    type: "object",
-    properties: {
-      keys: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            left: {
-              type: "string",
-              enum: Object.keys(schema1.properties)
-            },
-            right: {
-              type: "string",
-              enum: Object.keys(schema2.properties)
+          anotherNestedKey: {
+            type: "object",
+            NestedInsideNestedKey: {
+              moreNesting: {
+                properties: {
+                  superNestedFirstKey: {
+                    type: "string",
+                  },
+                  superNestedSecondKey: {
+                    type: "string",
+                    label: "Salesforce Nested Label",
+                  },
+                },
+              },
             },
           },
         },
-      }
-    }
-  }
-}
-
-magicFunction(customerJsonSchema, leadJsonSchema)
-
-
-
-
-
-
-
-
+      },
+    },
+  },
+};
 
 // this is some sample data that will get transformed
 export const sourceToTransformation = {
@@ -102,4 +83,11 @@ export const sourceToTransformation = {
   First: "Shehzad",
   Last: "Akbar",
   Organization: "Fusebit",
+  Nested: {
+    Object: {
+      Is: {
+        here: "Nesting Objects Worked!",
+      },
+    },
+  },
 };
